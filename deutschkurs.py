@@ -60,6 +60,20 @@ if not os.path.exists('cache'):
 if not os.path.exists('docs'):
     os.makedirs('docs')
 
+if not os.path.exists('userdata'):
+    os.makedirs('userdata')
+    # Write README
+    with open('userdata/README', 'w') as fout:
+        fout.write("Each directory is a topic. Give them a meaninful name\n")
+    # Write example
+    os.makedirs('userdata/grundschule')
+    with open('userdata/grundschule/info-20200901.txt', 'w') as fout:
+        sentences = """Liebe Eltern.\n
+                    Im Anhang finden Sie die Infos zum Infektionsschutzgesetz.\n
+                    Vielen Dank und noch einen schönen Tag!\n
+                    Grüße"""
+        fout.write(sentences)
+
 
 # Global cache for words
 cache_path = os.path.join('cache', 'cache.json')
@@ -110,12 +124,15 @@ def analyze(topic, text):
 
 for topic in os.listdir('userdata'):
     topicpath = os.path.join('userdata', topic)
-    for filename in os.listdir(topicpath):
-        filepath = os.path.join(topicpath, filename)
-        print("Analyzing %s -> %s" % (topic, filename))
-        text = open(filepath, 'r').read()
-        tobj = analyze(topic, text)
-        # ~ pp.pprint(tobj)
+    try:
+        for filename in os.listdir(topicpath):
+            filepath = os.path.join(topicpath, filename)
+            print("Analyzing %s -> %s" % (topic, filename))
+            text = open(filepath, 'r').read()
+            tobj = analyze(topic, text)
+    except NotADirectoryError:
+        continue
+
     pp.pprint(cache)
     print(list(cache))
 
