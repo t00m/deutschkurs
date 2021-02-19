@@ -1,14 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-Log module.
-
 # File: log.py
 # Author: Tomás Vírseda
 # License: GPL v3
-# Description: log module
-"""
+# Description: Log module
 
 import logging
 

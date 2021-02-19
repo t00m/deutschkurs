@@ -1,22 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Module with the application logic.
 
+# File: deutschkurs.py
 # Author: Tomás Vírseda <tomasvirseda@gmail.com>
-# License: GPLv3
-"""
+# License: GPL v3
+# Description: Module with the application logic.
+
 
 # Standard libraries
 import os
 import json
+import subprocess
 
 import nltk # Natural Language Toolkit (https://www.nltk.org)
 from demorphy import Analyzer # DEMorphy is a morphological analyzer for German language (https://github.com/DuyguA/DEMorphy)
 import spacy # spaCy is library for advanced Natural Language Processing in Python (https://spacy.io)
 
 from log import get_logger # custom logging module
-msg = get_logger("Deutschkurs", "INFO")
+from mydict import PersonalDictionary
+
+DEBUG_LEVEL = "DEBUG"
+
+msg = get_logger("Deutschkurs", DEBUG_LEVEL)
 msg.info("Starting Deutschkurs")
 
 try:
@@ -82,6 +87,14 @@ except:
     cache = {}
     msg.debug("Words cache created")
 
+
+pd = PersonalDictionary(DEBUG_LEVEL)
+
+def get_dict_definition(word):
+    pass
+
+
+
 def analyze(topic, text):
     global cache
     doc = nlp(text)
@@ -95,7 +108,7 @@ def analyze(topic, text):
             tobj[doc]['topic'] = topic
             tobj[doc]['sentences'] = set()
             sentence = nlp(doc)
-            msg.info("\tAnalyzing '%s'" % sentence)
+            msg.info("Sentence[%s]" % sentence)
             for word in sentence:
                 if not word.pos_ in ['PUNCT', 'SPACE']: # avoid punctuactions
                     key = word.text.lower()
@@ -111,10 +124,11 @@ def analyze(topic, text):
                             tobj[doc][key]['prefix'] = word.prefix_ # Prefix
                             tobj[doc][key]['suffix'] = word.suffix_ # Sufix
                             cache[key] = tobj[doc][key]
-                            msg.debug("\t\tWord '%s' added to global cache" % key)
+                            msg.debug("[ + ] Word '%s' added to global cache" % key)
                     else:
                         tobj[doc][key] = cache[key]
-                        msg.debug("\t\tWord '%s' got from cache" % key)
+                        msg.debug("[ = ] Word '%s' got from cache" % key)
+                    pd.lookup(key)
 
     return tobj
 
@@ -124,7 +138,7 @@ for topic in os.listdir('userdata'):
     try:
         for filename in os.listdir(topicpath):
             filepath = os.path.join(topicpath, filename)
-            msg.info("[%s] - Analyzing %s", topic, filename)
+            msg.info("Topic[%s] - File[%s]", topic, filename)
             text = open(filepath, 'r').read()
             tobj = analyze(topic, text)
     except NotADirectoryError:
@@ -160,4 +174,5 @@ for key in cache:
         fdp.write(EOHMARK)
         fdp.write(BODY % (cache[key]['word'], cache[key]['pos'], cache[key]['lema']))
 
+pd.missing()
 msg.info("Ending Deutschkurs")
