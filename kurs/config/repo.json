@@ -1,0 +1,13 @@
+{
+    "title": "Deutschkurs A1-A2",
+    "theme": "deutschkurs",
+    "source": "source",
+    "target": "target",
+    "seo": {"index": false, "lang": "de"},
+    "markdown": {"extensions": ["pymdownx.tasklist"]},
+    "deutschkurs": {
+        "native": "en",
+        "learner_level": "A2",
+        "topics": ["Familie", "Schule", "Sport", "Freunde", "Arbeit", "Nachbarn", "Gesundheit", "Alltag"]
+    }
+}
